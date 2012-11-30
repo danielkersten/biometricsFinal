@@ -11,6 +11,7 @@ class CameraCapture
 	public:
 		CameraCapture();
 		~CameraCapture();
+		IplImage *getCameraFrame();
 
 	
 	private:
