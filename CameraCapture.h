@@ -12,6 +12,7 @@ class CameraCapture
 		CameraCapture();
 		~CameraCapture();
 		IplImage *getCameraFrame();
+		CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade  * cascade);
 
 	
 	private:
