@@ -15,12 +15,14 @@ public:
   static COptions &Instance();
   bool ParseOptions(int argc, const char **argv);
   std::string getFaceCascadeFile();
+  std::string getTrainingDataSaveFile();
 private:
   /* Global options are set/retrieved via the COptions singleton class */
   COptions();
   COptions(COptions const&);
   void operator=(COptions const&);
   std::string face_cascade_file;
+  std::string training_data_save_file;
 };
 
 #endif /*OPTIONS_HPP*/

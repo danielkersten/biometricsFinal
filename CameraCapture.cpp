@@ -1,4 +1,5 @@
 #include "CameraCapture.h"
+#include "options.hpp"
 
 #include <cstdio>
 #include <unistd.h>
@@ -114,9 +115,12 @@ void CameraCapture::storeTrainingData()
 {
   CvFileStorage *fileStorage;
   int i;
+  std::string training_data_save_file;
 
   /* create a file-storage interface */
-  fileStorage = cvOpenFileStorage("facedata.xml", 0, CV_STORAGE_WRITE);
+  training_data_save_file = COptions::Instance().getTrainingDataSaveFile();
+  fileStorage = cvOpenFileStorage(training_data_save_file.c_str(), 0,
+                                  CV_STORAGE_WRITE);
 
   /* store all the data */
   cvWriteInt(fileStorage, "nEigens", nEigens);
