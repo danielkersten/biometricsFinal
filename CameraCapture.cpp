@@ -58,7 +58,7 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
 	double t;
 	CvSeq* rects;
 	CvSize size;
-	int i, ms,nFaces;
+	int ms,nFaces;
 
 	storage = cvCreateMemStorage(0);
 	cvClearMemStorage(storage);
