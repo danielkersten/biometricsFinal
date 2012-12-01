@@ -34,11 +34,13 @@ LIBS = \
 # -lopencv_nonfree.so
 
 DEPS = \
-  CameraCapture.h
+  CameraCapture.h \
+  options.hpp
 
 SRCS = \
   CameraCapture.cpp \
-  camCapture.cpp
+  camCapture.cpp \
+  options.cpp
 
 OBJS = $(filter %.o,$(SRCS:.cpp=.o))
 

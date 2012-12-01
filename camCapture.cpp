@@ -1,15 +1,21 @@
 #include<stdio.h>
 #include "CameraCapture.h"
+#include "options.hpp"
 
 
 
-int main()
+int main(int argc, const char **argv)
 {
-	CameraCapture * aCapture = new CameraCapture();
+  if (!COptions::Instance().ParseOptions(argc, argv))
+    return EXIT_FAILURE;
+
+  std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
+  
+  CameraCapture * aCapture = new CameraCapture();
 
 	cvNamedWindow("mywindow", CV_WINDOW_AUTOSIZE);
 
-	CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");	
+	CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
 
 	while(cvWaitKey(10) != 27)
 	{
