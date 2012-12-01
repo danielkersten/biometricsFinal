@@ -5,6 +5,16 @@
 
 CameraCapture::CameraCapture()
 {
+  /* Initially set all class variables to 0 or NULL */
+  nTrainFaces = 0;
+  nEigens = 0;
+  faceImgArr = NULL;
+  personNumTruthMat = NULL;
+  pAvgTrainImg = NULL;
+  eigenVectArr = NULL;
+  eigenValMat = NULL;
+  projectedTrainFaceMat = NULL;
+
 	camera = cvCreateCameraCapture(0);
 
 	if(!camera)
@@ -98,4 +108,31 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
 	cvReleaseMemStorage(&storage);
 
 	return rc;
+}
+
+void CameraCapture::storeTrainingData()
+{
+  CvFileStorage *fileStorage;
+  int i;
+
+  /* create a file-storage interface */
+  fileStorage = cvOpenFileStorage("facedata.xml", 0, CV_STORAGE_WRITE);
+
+  /* store all the data */
+  cvWriteInt(fileStorage, "nEigens", nEigens);
+  cvWriteInt(fileStorage, "nTrainFaces", nTrainFaces);
+  cvWrite(fileStorage, "trainPersonNumMat", personNumTruthMat);
+  cvWrite(fileStorage, "eigenValMat", eigenValMat, cvAttrList(0, 0));
+  cvWrite(fileStorage, "projectedTrainFaceMat", projectedTrainFaceMat,
+          cvAttrList(0, 0));
+  cvWrite(fileStorage, "avgTrainImg", pAvgTrainImg, cvAttrList(0, 0));
+  for (i = 0; i < nEigens; i++)
+  {
+    char varname[200];
+    sprintf(varname, "eigenVect_%d", i);
+    cvWrite(fileStorage, varname, eigenVectArr[i], cvAttrList(0, 0));
+  }
+
+  /* release the file-storage interface */
+  cvReleaseFileStorage(&fileStorage);
 }

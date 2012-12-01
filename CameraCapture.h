@@ -10,12 +10,18 @@ class CameraCapture
 		~CameraCapture();
 		IplImage *getCameraFrame();
 		CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade  * cascade);
+    void storeTrainingData();
 
 	
 	private:
 		CvCapture *camera;
-
-
-
+    int nTrainFaces;
+    int nEigens;
+    IplImage **faceImgArr;
+    CvMat *personNumTruthMat;
+    IplImage *pAvgTrainImg;
+    IplImage **eigenVectArr;
+    CvMat *eigenValMat;
+    CvMat *projectedTrainFaceMat;
 };
 #endif
