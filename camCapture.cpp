@@ -1,8 +1,7 @@
-#include <cstdio>
 #include "CameraCapture.h"
 #include "options.hpp"
 
-
+#include <cstdio>
 
 int main(int argc, const char **argv)
 {
