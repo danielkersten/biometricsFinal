@@ -1,8 +1,7 @@
 #ifndef CAMERA_CAPTURE_HPP
 #define CAMERA_CAPTURE_HPP
 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 
 #include<stdio.h>
 
