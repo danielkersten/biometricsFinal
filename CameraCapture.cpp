@@ -1,5 +1,6 @@
 #include "CameraCapture.h"
 
+#include <cstdio>
 #include <unistd.h>
 
 CameraCapture::CameraCapture()

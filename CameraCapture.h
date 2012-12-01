@@ -3,8 +3,6 @@
 
 #include <opencv2/opencv.hpp>
 
-#include<stdio.h>
-
 class CameraCapture
 {
 	public:
