@@ -1,5 +1,7 @@
 #include "CameraCapture.h"
 
+#include <unistd.h>
+
 CameraCapture::CameraCapture()
 {
 	camera = cvCreateCameraCapture(0);
