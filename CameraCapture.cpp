@@ -187,7 +187,11 @@ int CameraCapture::loadFaceImgArray(const char *filename)
   int iFace, nFaces = 0;
 
   /* Open the input file */
-  imgListFile = fopen(filename, "r");
+  if ((imgListFile = fopen(filename, "r")) == NULL)
+  {
+    fprintf(stderr, "File '%s' failed to open.\n", filename);
+    return -1;
+  }
 
   /* count the number of faces */
   while (fgets(imgFilename, 512, imgListFile))
