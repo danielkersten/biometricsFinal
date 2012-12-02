@@ -8,6 +8,7 @@
 #define CAMERA_CAPTURE_HPP
 
 #include <opencv2/opencv.hpp>
+#include <pthread.h>
 
 class CameraCapture
 {
@@ -20,6 +21,7 @@ public:
   void storeTrainingData();
 
 private:
+  static void *threadFunc(void *parm);
   CvCapture *camera;
   int nTrainFaces;
   int nEigens;
@@ -29,5 +31,7 @@ private:
   IplImage **eigenVectArr;
   CvMat *eigenValMat;
   CvMat *projectedTrainFaceMat;
+
+  pthread_t tid;
 };
 #endif
