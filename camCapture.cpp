@@ -18,6 +18,10 @@ int main(int argc, const char **argv)
   
   CameraCapture * aCapture = new CameraCapture();
 
+  /* Attempt to initialize the camera */
+  if (!aCapture->initCamera())
+    return EXIT_FAILURE;
+
 	cvNamedWindow("mywindow", CV_WINDOW_AUTOSIZE);
 
 	CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());

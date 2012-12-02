@@ -14,6 +14,7 @@ class CameraCapture
 	public:
 		CameraCapture();
 		~CameraCapture();
+    bool initCamera();
 		IplImage *getCameraFrame();
 		CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade  * cascade);
     void storeTrainingData();
