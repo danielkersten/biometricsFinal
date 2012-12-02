@@ -39,7 +39,7 @@ LIBS = \
 # -lopencv_nonfree.so
 
 DEPS = \
-  CameraCapture.h \
+  CameraCapture.hpp \
   options.hpp
 
 SRCS = \

@@ -4,7 +4,7 @@
  * 12/05/2012
  */
 
-#include "CameraCapture.h"
+#include "CameraCapture.hpp"
 #include "options.hpp"
 
 #include <cstdio>
