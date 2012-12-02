@@ -4,22 +4,20 @@
  * 12/05/2012
  */
 
+#include "CameraCapture.hpp"
 #include "options.hpp"
-#include "program.hpp"
 
 #include <cstdio>
 
 int main(int argc, const char **argv)
 {
-  CProgram program;
-
   if (!COptions::Instance().ParseOptions(argc, argv))
     return EXIT_FAILURE;
 
   switch (COptions::Instance().getOperation())
   {
   case COptions::DEFAULT:
-    program.testCamera();
+    CameraCapture::testCamera();
   case COptions::TRAINING:
     fprintf(stderr, "Training operation not yet implemented.\n");
     break;

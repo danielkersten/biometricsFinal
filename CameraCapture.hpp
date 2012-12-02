@@ -19,6 +19,7 @@ public:
   IplImage *getCameraFrame();
   CvRect detectFaceInImage(IplImage *inputImg,     CvHaarClassifierCascade   *cascade);
   void storeTrainingData();
+  static bool testCamera();
 
   struct FrameCascade
   {

@@ -36,14 +36,12 @@ LIBS = \
 
 DEPS = \
   CameraCapture.hpp \
-  options.hpp \
-  program.hpp
+  options.hpp
 
 SRCS = \
   CameraCapture.cpp \
   main.cpp \
-  options.cpp \
-  program.cpp
+  options.cpp
 
 OBJS = $(filter %.o,$(SRCS:.cpp=.o))
 
