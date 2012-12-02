@@ -71,11 +71,12 @@ IplImage *CameraCapture::getCameraFrame()
 
 CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade)
 {
-  CvSize minFeatureSize = cvSize(20, 20);
+  CvSize minFeatureSize = cvSize(80, 60);
 
-  int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
+  //int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
+  int flags = CV_HAAR_DO_CANNY_PRUNING;
 
-  float search_scale_factor = 1.1f;
+  float search_scale_factor = 1.2f;
 
   IplImage *detectImg;
   IplImage *greyImg = 0;
@@ -101,7 +102,7 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
   }
 
   t = (double)cvGetTickCount();
-  rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 3, flags, minFeatureSize);
+  rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 2, flags, minFeatureSize);
 
   t = (double)cvGetTickCount() - t;
   ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
