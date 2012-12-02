@@ -35,9 +35,23 @@ int main(int argc, const char **argv)
   case COptions::VERIFICATION:
     fprintf(stderr, "Verification operation not yet implemented.\n");
     break;
+  case COptions::IMAGE_CAPTURE:
+  {
+      int num_images = COptions::Instance().getNumImages();
+      printf("Image capture, going to capture:%d \n",num_images);
+
+    if(!camcapture.captureImages(num_images))
+    {
+	fprintf(stderr, "Failed to capture images! \n");
+        return EXIT_FAILURE;
+
+    }
+    break; 
+  }
   default:
     fprintf(stderr, "Unknown operation specified.\n");
-    return EXIT_FAILURE;
+     
+     return EXIT_FAILURE;
   }
 
   return EXIT_SUCCESS;

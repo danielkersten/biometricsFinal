@@ -333,3 +333,16 @@ IplImage * CameraCapture::preProcessImage(IplImage *inputImg, int pWidth,int pHe
 	
 	return imageProcessed;	
 }
+bool CameraCapture::captureImages(int pNumImages)
+{
+   (void)pNumImages;
+   if(!initCamera())
+   {
+      fprintf(stderr,"Failed to init the camera");
+      return true;
+   } 
+
+   
+   
+   return false;
+}

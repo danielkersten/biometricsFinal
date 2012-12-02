@@ -18,6 +18,7 @@ public:
   std::string getTrainingDataSaveFile();
   int getCameraDeviceNumber();
   int getOperation();
+  int getNumImages();
   std::string getTrainingDataImageArrayFile();
 
   /* Different operations supported by this program */
@@ -25,7 +26,8 @@ public:
   {
     DEFAULT,
     TRAINING,
-    VERIFICATION
+    VERIFICATION,
+    IMAGE_CAPTURE
   };
 private:
   /* Global options are set/retrieved via the COptions singleton class */
@@ -37,6 +39,7 @@ private:
   int camera_device_number;
   int operation;
   std::string training_data_image_array_file;
+  int num_images;
 };
 
 #endif /*OPTIONS_HPP*/

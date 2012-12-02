@@ -24,6 +24,7 @@ public:
 
   IplImage * preProcessImage(IplImage *inputImg, int pWidth=100,int pHeight=100);
 
+  bool captureImages(int pNumImages);
   bool testCamera();
   bool train();
 

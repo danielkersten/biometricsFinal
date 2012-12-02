@@ -17,6 +17,7 @@ COptions::COptions()
   camera_device_number = 0;
   operation = DEFAULT;
   training_data_image_array_file = "train.txt";
+  num_images = 5;  
 }
 
 COptions &COptions::Instance()
@@ -50,6 +51,11 @@ std::string COptions::getTrainingDataImageArrayFile()
   return training_data_image_array_file;
 }
 
+int COptions::getNumImages()
+{
+   return num_images;
+}
+
 static const char usage[] =
   "Usage: camCapture [OPTIONS]\n"
   "Authors: Andres Mejia, Christopher O'Connell\n"
@@ -59,6 +65,7 @@ static const char usage[] =
   "  --face-cascade-file [FILE]           set FILE as face cascade file\n"
   "  --training-data-save-file [FILE]     set FILE as training data save file\n"
   "  --camera-device-number [NUMBER]      set the camera device number to use\n"
+  "  --num_images [NUMBER]                sets the number of images to capture, only used with IMAGE_CAPTURE\n"
   "  --operation [ARG]                    set the operation to run, valid\n"
   "                                       operations are 'default', \n"
   "                                       'training', and 'verification'\n"
@@ -88,6 +95,10 @@ bool COptions::ParseOptions(int argc, const char **argv)
     {
       camera_device_number = atoi(argv[i]);
     }
+    else if (!arg.compare("--num_images") && argv[++i])
+    {
+       num_images = atoi(argv[i]);
+    }
     else if (!arg.compare("--operation") && argv[++i])
     {
       std::string str = argv[i];
@@ -98,12 +109,15 @@ bool COptions::ParseOptions(int argc, const char **argv)
         operation = TRAINING;
       else if (!str.compare("verification"))
         operation = VERIFICATION;
+      else if (!str.compare("image_capture"))
+        operation = IMAGE_CAPTURE;
       else
       {
         fprintf(stderr, "Unknown phase '%s'.\n", str.c_str());
         return false;
       }
     }
+    
     else if (!arg.compare("--training-data-image-array-file") && argv[++i])
     {
       training_data_image_array_file = argv[i];
