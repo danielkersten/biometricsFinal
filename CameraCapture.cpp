@@ -30,7 +30,7 @@ CameraCapture::~CameraCapture()
 
 bool CameraCapture::initCamera()
 {
-  camera = cvCreateCameraCapture(0);
+  camera = cvCreateCameraCapture(COptions::Instance().getCameraDeviceNumber());
 
   if (!camera)
   {
