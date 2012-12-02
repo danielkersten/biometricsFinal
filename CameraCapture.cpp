@@ -232,32 +232,41 @@ bool CameraCapture::testCamera()
 {
   std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
 
-  CameraCapture *aCapture = new CameraCapture();
-
   /* Attempt to initialize the camera */
-  if (!aCapture->initCamera())
+  if (!initCamera())
     return false;
 
   cvNamedWindow("mywindow", CV_WINDOW_AUTOSIZE);
-
+  cvNamedWindow("preProcessed", CV_WINDOW_AUTOSIZE);
   CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
 
   while (cvWaitKey(10) != 27)
   {
-    IplImage *frame = aCapture->getCameraFrame();
+    IplImage *frame = getCameraFrame();
 
-    CvRect aFace = aCapture->detectFaceInImage(frame, cascade);
+    CvRect aFace = detectFaceInImage(frame, cascade);
     cvRectangle(frame, cvPoint(aFace.x, aFace.y), cvPoint(aFace.x + aFace.width, aFace.y + aFace.height), CV_RGB(255, 0, 0), 1, 8, 0);
 
 
+    if(aFace.x !=-1)
+    {
+	IplImage * cropped = cvCreateImage(cvSize(aFace.width, aFace.height),frame->depth,frame->nChannels);
+	cvSetImageROI(frame,aFace);
+	cvCopy(frame,cropped);
+	cvResetImageROI(frame);
 
+	IplImage *preprocessed = preProcessImage(cropped,145,145);
+	cvShowImage("preProcessed", preprocessed);
+	//delete preprocessed;
+    }
+
+    
     cvShowImage("mywindow", frame);
-
+    //delete frame;
   }
 
-  delete aCapture;
   cvDestroyWindow("mywindow");
-
+  cvDestroyWindow("preProcessed");
   return true;
 }
 
@@ -292,4 +301,32 @@ bool CameraCapture::train()
   storeTrainingData();
   
   return true;
+}
+
+IplImage * CameraCapture::preProcessImage(IplImage *inputImg, int pWidth,int pHeight)
+{
+	IplImage * imageGrey;
+	
+	if(inputImg->nChannels == 3)
+	{
+		imageGrey = cvCreateImage(cvGetSize(inputImg), IPL_DEPTH_8U,1);
+		cvCvtColor(inputImg,imageGrey,CV_BGR2GRAY);
+	}
+	else
+	{
+		imageGrey = inputImg;
+	}
+	IplImage *imageProcessed;
+	imageProcessed = cvCreateImage(cvSize(pWidth, pHeight), IPL_DEPTH_8U,1);
+	
+	cvResize(imageGrey,imageProcessed,CV_INTER_LINEAR);
+	
+	cvEqualizeHist(imageProcessed,imageProcessed);
+
+	if(imageGrey)
+	{
+		cvReleaseImage(&imageGrey);
+	}
+	
+	return imageProcessed;	
 }

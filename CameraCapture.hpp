@@ -22,6 +22,8 @@ public:
   int loadFaceImgArray(const char *filename);
   void doPCA();
 
+  IplImage * preProcessImage(IplImage *inputImg, int pWidth=100,int pHeight=100);
+
   bool testCamera();
   bool train();
 
