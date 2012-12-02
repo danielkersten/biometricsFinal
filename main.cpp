@@ -17,7 +17,11 @@ int main(int argc, const char **argv)
   switch (COptions::Instance().getOperation())
   {
   case COptions::DEFAULT:
-    CameraCapture::testCamera();
+    if (!CameraCapture::testCamera())
+    {
+      fprintf(stderr, "Camera test failed.\n");
+      return EXIT_FAILURE;
+    }
     break;
   case COptions::TRAINING:
     fprintf(stderr, "Training operation not yet implemented.\n");
