@@ -18,6 +18,7 @@ int main(int argc, const char **argv)
   {
   case COptions::DEFAULT:
     CameraCapture::testCamera();
+    break;
   case COptions::TRAINING:
     fprintf(stderr, "Training operation not yet implemented.\n");
     break;
