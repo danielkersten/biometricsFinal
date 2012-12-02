@@ -4,9 +4,13 @@
 # 12/05/2012
 
 DEBUG ?= yes
+WERROR ?= yes
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror
+CXXFLAGS = -Wall -Wextra
+ifeq ($(WERROR),yes)
+CXXFLAGS += -Werror
+endif
 ifeq ($(DEBUG),yes)
 CXXFLAGS += -g3 -O0
 else
