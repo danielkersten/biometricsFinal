@@ -16,6 +16,7 @@ COptions::COptions()
   training_data_save_file = "facedata.xml";
   camera_device_number = 0;
   operation = DEFAULT;
+  training_data_image_array_file = "train.txt";
 }
 
 COptions &COptions::Instance()
@@ -44,6 +45,11 @@ int COptions::getOperation()
   return operation;
 }
 
+std::string COptions::getTrainingDataImageArrayFile()
+{
+  return training_data_image_array_file;
+}
+
 static const char usage[] =
   "Usage: camCapture [OPTIONS]\n"
   "Authors: Andres Mejia, Christopher O'Connell\n"
@@ -56,6 +62,8 @@ static const char usage[] =
   "  --operation [ARG]                    set the operation to run, valid\n"
   "                                       operations are 'default', \n"
   "                                       'training', and 'verification'\n"
+  "  --training-data-image-array-file [FILE] set FILE as training data image\n"
+  "                                          array file\n"
   ;
 
 bool COptions::ParseOptions(int argc, const char **argv)
@@ -95,6 +103,10 @@ bool COptions::ParseOptions(int argc, const char **argv)
         fprintf(stderr, "Unknown phase '%s'.\n", str.c_str());
         return false;
       }
+    }
+    else if (!arg.compare("--training-data-image-array-file") && argv[++i])
+    {
+      training_data_image_array_file = argv[i];
     }
     else
     {

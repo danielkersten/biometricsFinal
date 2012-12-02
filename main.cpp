@@ -11,20 +11,26 @@
 
 int main(int argc, const char **argv)
 {
+  CameraCapture camcapture;
+
   if (!COptions::Instance().ParseOptions(argc, argv))
     return EXIT_FAILURE;
 
   switch (COptions::Instance().getOperation())
   {
   case COptions::DEFAULT:
-    if (!CameraCapture::testCamera())
+    if (!camcapture.testCamera())
     {
       fprintf(stderr, "Camera test failed.\n");
       return EXIT_FAILURE;
     }
     break;
   case COptions::TRAINING:
-    fprintf(stderr, "Training operation not yet implemented.\n");
+    if (!camcapture.train())
+    {
+      fprintf(stderr, "Training operation failed.\n");
+      return EXIT_FAILURE;
+    }
     break;
   case COptions::VERIFICATION:
     fprintf(stderr, "Verification operation not yet implemented.\n");

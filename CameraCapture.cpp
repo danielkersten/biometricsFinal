@@ -178,6 +178,71 @@ void *CameraCapture::threadFunc(void *parm)
 
 }
 
+int CameraCapture::loadFaceImgArray(const char *filename)
+{
+  FILE *imgListFile = NULL;
+  char imgFilename[512];
+  int iFace, nFaces = 0;
+
+  /* Open the input file */
+  imgListFile = fopen(filename, "r");
+
+  /* count the number of faces */
+  while (fgets(imgFilename, 512, imgListFile))
+    nFaces++;
+  rewind(imgListFile);
+
+  /* allocate the face-image array and person number matrix */
+  faceImgArr = (IplImage **)cvAlloc(nFaces * sizeof(IplImage *));
+  personNumTruthMat = cvCreateMat(1, nFaces, CV_32SC1);
+
+  /* store the face images in an array */
+  for (iFace = 0; iFace < nFaces; iFace++)
+  {
+    /* read person number and name of image file */
+    fscanf(imgListFile, "%d %s", personNumTruthMat->data.i + iFace,
+           imgFilename);
+
+    /* load the face image */
+    faceImgArr[iFace] = cvLoadImage(imgFilename, CV_LOAD_IMAGE_GRAYSCALE);
+  }
+
+  fclose(imgListFile);
+
+  return nFaces;
+}
+
+void CameraCapture::doPCA()
+{
+  int i;
+  CvTermCriteria calcLimit;
+  CvSize faceImgSize;
+
+  /* set the number of eigenvalues to use */
+  nEigens = nTrainFaces - 1;
+
+  /* allocate the eigenvector images */
+  faceImgSize.width = faceImgArr[0]->width;
+  faceImgSize.height = faceImgArr[0]->height;
+  eigenVectArr = (IplImage**)cvAlloc(sizeof(IplImage*) * nEigens);
+  for (i = 0; i < nEigens; i++)
+    eigenVectArr[i] = cvCreateImage(faceImgSize, IPL_DEPTH_32F, 1);
+
+  /* allocate the eigenvalue array */
+  eigenValMat = cvCreateMat(1, nEigens, CV_32FC1);
+
+  /* allocate the averaged image */
+  pAvgTrainImg = cvCreateImage(faceImgSize, IPL_DEPTH_32F, 1);
+
+  /* set the PCA termination criterion */
+  calcLimit = cvTermCriteria(CV_TERMCRIT_ITER, nEigens, 1);
+
+  /* compute average image, eigenvalues, and eigenvectors */
+  cvCalcEigenObjects(nTrainFaces, faceImgArr, eigenVectArr,
+                     CV_EIGOBJ_NO_CALLBACK, 0, 0, &calcLimit, pAvgTrainImg,
+                     eigenValMat->data.fl);
+}
+
 bool CameraCapture::testCamera()
 {
   std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
@@ -208,5 +273,38 @@ bool CameraCapture::testCamera()
   delete aCapture;
   cvDestroyWindow("mywindow");
 
+  return true;
+}
+
+bool CameraCapture::train()
+{
+  int i;
+
+  /* load training data */
+  std::string training_data_image_array_file =
+    COptions::Instance().getTrainingDataImageArrayFile();
+  nTrainFaces = loadFaceImgArray(training_data_image_array_file.c_str());
+  if (nTrainFaces < 2)
+  {
+    fprintf(stderr, "Need 2 or more training faces\n"
+                    "Input file contains only %d\n", nTrainFaces);
+    return false;
+  }
+
+  /* do PCA on the training faces */
+  doPCA();
+
+  /* project the training images onto the PCA subspace */
+  projectedTrainFaceMat = cvCreateMat(nTrainFaces, nEigens, CV_32FC1);
+  for (i = 0; i < nTrainFaces; i++)
+  {
+    cvEigenDecomposite(faceImgArr[i], nEigens, eigenVectArr, 0, 0,
+                       pAvgTrainImg,
+                       projectedTrainFaceMat->data.fl + i * nEigens);
+  }
+
+  /* store the recognition data as an xml file */
+  storeTrainingData();
+  
   return true;
 }

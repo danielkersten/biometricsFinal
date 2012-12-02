@@ -8,6 +8,7 @@
 #define CAMERA_CAPTURE_HPP
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/legacy/legacy.hpp>
 #include <pthread.h>
 
 class CameraCapture
@@ -19,7 +20,11 @@ public:
   IplImage *getCameraFrame();
   CvRect detectFaceInImage(IplImage *inputImg,     CvHaarClassifierCascade   *cascade);
   void storeTrainingData();
-  static bool testCamera();
+  int loadFaceImgArray(const char *filename);
+  void doPCA();
+
+  bool testCamera();
+  bool train();
 
   struct FrameCascade
   {

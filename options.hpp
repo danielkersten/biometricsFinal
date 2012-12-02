@@ -18,6 +18,7 @@ public:
   std::string getTrainingDataSaveFile();
   int getCameraDeviceNumber();
   int getOperation();
+  std::string getTrainingDataImageArrayFile();
 
   /* Different operations supported by this program */
   enum
@@ -35,6 +36,7 @@ private:
   std::string training_data_save_file;
   int camera_device_number;
   int operation;
+  std::string training_data_image_array_file;
 };
 
 #endif /*OPTIONS_HPP*/
