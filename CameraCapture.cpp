@@ -34,7 +34,7 @@ bool CameraCapture::initCamera()
   camera = cvCreateCameraCapture(0);
   if(!camera)
   {
-    printf("Couldn't access the camera!.\n");
+    fprintf(stderr, "Couldn't access the camera!.\n");
     return false;
   }
   cvSetCaptureProperty(camera,CV_CAP_PROP_FRAME_WIDTH, 320);
@@ -45,7 +45,7 @@ bool CameraCapture::initCamera()
   {
     int w = frame->width;
     int h = frame->height;
-    printf("Got the camera at %dx%d resolution. \n",w,h);
+    fprintf(stdout, "Got the camera at %dx%d resolution. \n",w,h);
   }
   usleep(1000);
   return true;
@@ -56,7 +56,7 @@ IplImage * CameraCapture::getCameraFrame()
 	IplImage * frame = cvQueryFrame(camera);
 	if(!frame)
 	{
-		printf("Couldn't grab a camera frame! \n");
+		fprintf(stderr, "Couldn't grab a camera frame! \n");
 		exit(1);
 	}
 	return frame;
@@ -100,7 +100,7 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
 	t = (double)cvGetTickCount()-t;
 	ms = cvRound(t/((double)cvGetTickFrequency()*1000.0) );
 	nFaces = rects->total;
-	printf("Face Detection took %d ms and found %d objects\n",ms,nFaces);
+	fprintf(stdout, "Face Detection took %d ms and found %d objects\n",ms,nFaces);
 
 	if(nFaces >0)
 	{
