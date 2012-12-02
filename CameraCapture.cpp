@@ -61,10 +61,7 @@ IplImage *CameraCapture::getCameraFrame()
   IplImage *frame = cvQueryFrame(camera);
 
   if (!frame)
-  {
-    fprintf(stderr, "Couldn't grab a camera frame! \n");
-    exit(1);
-  }
+    return NULL;
 
   return frame;
 }
@@ -242,7 +239,12 @@ bool CameraCapture::testCamera()
 
   while (cvWaitKey(10) != 27)
   {
-    IplImage *frame = getCameraFrame();
+    IplImage *frame;
+    if ((frame = getCameraFrame()) == NULL)
+    {
+      fprintf(stderr, "Couldn't grab a camera frame!\n");
+      return false;
+    }
 
     CvRect aFace = detectFaceInImage(frame, cascade);
     cvRectangle(frame, cvPoint(aFace.x, aFace.y), cvPoint(aFace.x + aFace.width, aFace.y + aFace.height), CV_RGB(255, 0, 0), 1, 8, 0);
