@@ -71,14 +71,59 @@ IplImage *CameraCapture::getCameraFrame()
 
 CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade)
 {
+  CvSize minFeatureSize = cvSize(20, 20);
+
+  int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
+
+  float search_scale_factor = 1.1f;
+
+  IplImage *detectImg;
+  IplImage *greyImg = 0;
+  CvMemStorage *storage;
+
   CvRect rc;
-  void * returnVal;
-	//create the thread
-	pthread_create(&tid,NULL,threadFunc,inputImg);
-	pthread_join(tid,&returnVal);
-	
-	CvRect * rectPoint = (CvRect *)returnVal;
-	rc = *rectPoint;
+  double t;
+  CvSeq *rects;
+  CvSize size;
+  int ms, nFaces;
+
+  storage = cvCreateMemStorage(0);
+  cvClearMemStorage(storage);
+
+  detectImg = (IplImage *)inputImg;
+
+  if (inputImg->nChannels > 1)
+  {
+    size = cvSize(inputImg->width, inputImg->height);
+    greyImg = cvCreateImage(size, IPL_DEPTH_8U, 1);
+    cvCvtColor(inputImg, greyImg, CV_BGR2GRAY);
+    detectImg = greyImg;
+  }
+
+  t = (double)cvGetTickCount();
+  rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 3, flags, minFeatureSize);
+
+  t = (double)cvGetTickCount() - t;
+  ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
+  nFaces = rects->total;
+  fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
+
+  if (nFaces > 0)
+  {
+    rc = *(CvRect *)cvGetSeqElem(rects, 0);
+  }
+  else
+  {
+    rc = cvRect(-1, -1, -1, -1);
+  }
+
+  if (greyImg)
+  {
+    cvReleaseImage(&greyImg);
+  }
+
+  cvReleaseMemStorage(&storage);
+
   return rc;
 }
 
@@ -111,63 +156,6 @@ void CameraCapture::storeTrainingData()
 
   /* release the file-storage interface */
   cvReleaseFileStorage(&fileStorage);
-}
-
-void *CameraCapture::threadFunc(void *parm)
-{
-	CvSize minFeatureSize = cvSize(20, 20);
-
-  	int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
-
-  	float search_scale_factor = 1.1f;
-
-  	IplImage *detectImg;
-  	IplImage *greyImg = 0;
-  	CvMemStorage *storage;
-i
-  	CvRect rc;
-  	double t;
-  	CvSeq *rects;
-  	CvSize size;
-  	int ms, nFaces;
-
-  	storage = cvCreateMemStorage(0);
-  	cvClearMemStorage(storage);
-
-  	detectImg = (IplImage *)parm;
-
-  	if (detectImg->nChannels > 1)
-  	{
-    		size = cvSize(detectImg->width, detectImg->height);
-    		greyImg = cvCreateImage(size, IPL_DEPTH_8U, 1);
-    		cvCvtColor(detectImg, greyImg, CV_BGR2GRAY);
-    		detectImg = greyImg;
-  	}
-
-  	t = (double)cvGetTickCount();
-  	rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 3, flags, minFeatureSize);
-
-  	t = (double)cvGetTickCount() - t;
-  	ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
-  	nFaces = rects->total;
-  	fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
-
-  	if (nFaces > 0)
-  	{
-    		rc = *(CvRect *)cvGetSeqElem(rects, 0);
-  	}
-  	else
- 	{
-    		rc = cvRect(-1, -1, -1, -1);
-  	}
-
-  	if (greyImg)
-  	{
-    		cvReleaseImage(&greyImg);
-  	}
-
-  	cvReleaseMemStorage(&storage);	
-
 }
 
 int CameraCapture::loadFaceImgArray(const char *filename)
