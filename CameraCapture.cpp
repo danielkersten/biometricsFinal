@@ -13,6 +13,7 @@
 CameraCapture::CameraCapture()
 {
   /* Initially set all class variables to 0 or NULL */
+  camera = NULL;
   nTrainFaces = 0;
   nEigens = 0;
   faceImgArr = NULL;
@@ -25,7 +26,8 @@ CameraCapture::CameraCapture()
 
 CameraCapture::~CameraCapture()
 {
-  cvReleaseCapture(&camera);
+  if (camera)
+    cvReleaseCapture(&camera);
 }
 
 bool CameraCapture::initCamera()
