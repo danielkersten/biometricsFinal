@@ -1,3 +1,9 @@
+/* Andres Mejia, Christopher O'Connell
+ * CS667
+ * Term Project
+ * 12/05/2012
+ */
+
 #include "CameraCapture.h"
 #include "options.hpp"
 
