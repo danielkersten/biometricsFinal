@@ -11,24 +11,24 @@
 
 class CameraCapture
 {
-	public:
-		CameraCapture();
-		~CameraCapture();
-    bool initCamera();
-		IplImage *getCameraFrame();
-		CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade  * cascade);
-    void storeTrainingData();
+public:
+  CameraCapture();
+  ~CameraCapture();
+  bool initCamera();
+  IplImage *getCameraFrame();
+  CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade);
+  void storeTrainingData();
 
-	
-	private:
-		CvCapture *camera;
-    int nTrainFaces;
-    int nEigens;
-    IplImage **faceImgArr;
-    CvMat *personNumTruthMat;
-    IplImage *pAvgTrainImg;
-    IplImage **eigenVectArr;
-    CvMat *eigenValMat;
-    CvMat *projectedTrainFaceMat;
+
+private:
+  CvCapture *camera;
+  int nTrainFaces;
+  int nEigens;
+  IplImage **faceImgArr;
+  CvMat *personNumTruthMat;
+  IplImage *pAvgTrainImg;
+  IplImage **eigenVectArr;
+  CvMat *eigenValMat;
+  CvMat *projectedTrainFaceMat;
 };
 #endif

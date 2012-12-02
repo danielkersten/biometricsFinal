@@ -19,8 +19,8 @@ public:
 private:
   /* Global options are set/retrieved via the COptions singleton class */
   COptions();
-  COptions(COptions const&);
-  void operator=(COptions const&);
+  COptions(COptions const &);
+  void operator=(COptions const &);
   std::string face_cascade_file;
   std::string training_data_save_file;
 };

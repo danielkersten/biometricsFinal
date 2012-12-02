@@ -25,99 +25,106 @@ CameraCapture::CameraCapture()
 
 CameraCapture::~CameraCapture()
 {
-	cvReleaseCapture(&camera);
+  cvReleaseCapture(&camera);
 
 }
 
 bool CameraCapture::initCamera()
 {
   camera = cvCreateCameraCapture(0);
-  if(!camera)
+
+  if (!camera)
   {
     fprintf(stderr, "Couldn't access the camera!.\n");
     return false;
   }
-  cvSetCaptureProperty(camera,CV_CAP_PROP_FRAME_WIDTH, 320);
-  cvSetCaptureProperty(camera,CV_CAP_PROP_FRAME_HEIGHT, 240);
+
+  cvSetCaptureProperty(camera, CV_CAP_PROP_FRAME_WIDTH, 320);
+  cvSetCaptureProperty(camera, CV_CAP_PROP_FRAME_HEIGHT, 240);
 
   IplImage *frame = cvQueryFrame(camera);
-  if(frame)
+
+  if (frame)
   {
     int w = frame->width;
     int h = frame->height;
-    fprintf(stdout, "Got the camera at %dx%d resolution. \n",w,h);
+    fprintf(stdout, "Got the camera at %dx%d resolution. \n", w, h);
   }
+
   usleep(1000);
   return true;
 }
 
-IplImage * CameraCapture::getCameraFrame()
+IplImage *CameraCapture::getCameraFrame()
 {
-	IplImage * frame = cvQueryFrame(camera);
-	if(!frame)
-	{
-		fprintf(stderr, "Couldn't grab a camera frame! \n");
-		exit(1);
-	}
-	return frame;
+  IplImage *frame = cvQueryFrame(camera);
+
+  if (!frame)
+  {
+    fprintf(stderr, "Couldn't grab a camera frame! \n");
+    exit(1);
+  }
+
+  return frame;
 }
 
-CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade  * cascade)
+CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade)
 {
 
-	CvSize minFeatureSize = cvSize(20,20);
+  CvSize minFeatureSize = cvSize(20, 20);
 
-	int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
-	
-	float search_scale_factor=1.1f;
-	
-	IplImage *detectImg;
-	IplImage *greyImg = 0;
-	CvMemStorage * storage;
+  int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;
 
-	CvRect rc;
-	double t;
-	CvSeq* rects;
-	CvSize size;
-	int ms,nFaces;
+  float search_scale_factor = 1.1f;
 
-	storage = cvCreateMemStorage(0);
-	cvClearMemStorage(storage);
+  IplImage *detectImg;
+  IplImage *greyImg = 0;
+  CvMemStorage *storage;
 
-	detectImg = (IplImage*)inputImg;
+  CvRect rc;
+  double t;
+  CvSeq *rects;
+  CvSize size;
+  int ms, nFaces;
 
-	if(inputImg->nChannels >1)
-	{
-		size = cvSize(inputImg->width, inputImg->height);
-		greyImg = cvCreateImage(size,IPL_DEPTH_8U,1);
-		cvCvtColor(inputImg, greyImg, CV_BGR2GRAY);
-		detectImg = greyImg;
-	}
+  storage = cvCreateMemStorage(0);
+  cvClearMemStorage(storage);
 
-	t = (double)cvGetTickCount();
-	rects = cvHaarDetectObjects(detectImg, cascade,storage,search_scale_factor,3,flags,minFeatureSize);
+  detectImg = (IplImage *)inputImg;
 
-	t = (double)cvGetTickCount()-t;
-	ms = cvRound(t/((double)cvGetTickFrequency()*1000.0) );
-	nFaces = rects->total;
-	fprintf(stdout, "Face Detection took %d ms and found %d objects\n",ms,nFaces);
+  if (inputImg->nChannels > 1)
+  {
+    size = cvSize(inputImg->width, inputImg->height);
+    greyImg = cvCreateImage(size, IPL_DEPTH_8U, 1);
+    cvCvtColor(inputImg, greyImg, CV_BGR2GRAY);
+    detectImg = greyImg;
+  }
 
-	if(nFaces >0)
-	{
-		rc = *(CvRect *)cvGetSeqElem(rects,0);
-	}
-	else
-	{
-		rc =cvRect(-1,-1,-1,-1);
-	}
+  t = (double)cvGetTickCount();
+  rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 3, flags, minFeatureSize);
 
-	if(greyImg)
-	{
-		cvReleaseImage(&greyImg);
-	}
-	cvReleaseMemStorage(&storage);
+  t = (double)cvGetTickCount() - t;
+  ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
+  nFaces = rects->total;
+  fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
 
-	return rc;
+  if (nFaces > 0)
+  {
+    rc = *(CvRect *)cvGetSeqElem(rects, 0);
+  }
+  else
+  {
+    rc = cvRect(-1, -1, -1, -1);
+  }
+
+  if (greyImg)
+  {
+    cvReleaseImage(&greyImg);
+  }
+
+  cvReleaseMemStorage(&storage);
+
+  return rc;
 }
 
 void CameraCapture::storeTrainingData()
@@ -139,6 +146,7 @@ void CameraCapture::storeTrainingData()
   cvWrite(fileStorage, "projectedTrainFaceMat", projectedTrainFaceMat,
           cvAttrList(0, 0));
   cvWrite(fileStorage, "avgTrainImg", pAvgTrainImg, cvAttrList(0, 0));
+
   for (i = 0; i < nEigens; i++)
   {
     char varname[200];

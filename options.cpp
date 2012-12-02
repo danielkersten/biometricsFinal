@@ -15,7 +15,7 @@ COptions::COptions()
   training_data_save_file = "facedata.xml";
 }
 
-COptions& COptions::Instance()
+COptions &COptions::Instance()
 {
   static COptions instance;
   return instance;
@@ -50,6 +50,7 @@ bool COptions::ParseOptions(int argc, const char **argv)
   for (i = 1; i < argc; i++)
   {
     arg = argv[i];
+
     if (!arg.compare("--face-cascade-file") && argv[++i])
     {
       face_cascade_file = argv[i];
