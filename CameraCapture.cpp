@@ -69,10 +69,13 @@ IplImage *CameraCapture::getCameraFrame()
 
 CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade)
 {
+  FrameCascade frameCas;
+  frameCas.mInputImage = inputImg;
+  frameCas.mCascade = cascade;
   CvRect rc;
   void * returnVal;
 	//create the thread
-	pthread_create(&tid,NULL,threadFunc,inputImg);
+	pthread_create(&tid,NULL,threadFunc,&frameCas);
 	pthread_join(tid,&returnVal);
 	
 	CvRect * rectPoint = (CvRect *)returnVal;
@@ -121,8 +124,8 @@ void *CameraCapture::threadFunc(void *parm)
   	IplImage *detectImg;
   	IplImage *greyImg = 0;
   	CvMemStorage *storage;
-i
-  	CvRect rc;
+
+  	CvRect *rc;
   	double t;
   	CvSeq *rects;
   	CvSize size;
@@ -131,7 +134,8 @@ i
   	storage = cvCreateMemStorage(0);
   	cvClearMemStorage(storage);
 
-  	detectImg = (IplImage *)parm;
+        FrameCascade * frameCas = (FrameCascade *)parm;
+  	detectImg = frameCas->mInputImage;
 
   	if (detectImg->nChannels > 1)
   	{
@@ -142,7 +146,7 @@ i
   	}
 
   	t = (double)cvGetTickCount();
-  	rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 3, flags, minFeatureSize);
+  	rects = cvHaarDetectObjects(detectImg, frameCas->mCascade, storage, search_scale_factor, 3, flags, minFeatureSize);
 
   	t = (double)cvGetTickCount() - t;
   	ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
@@ -151,11 +155,15 @@ i
 
   	if (nFaces > 0)
   	{
-    		rc = *(CvRect *)cvGetSeqElem(rects, 0);
+    		rc = (CvRect *)cvGetSeqElem(rects, 0);
   	}
   	else
  	{
-    		rc = cvRect(-1, -1, -1, -1);
+    		rc = new CvRect();
+		rc->x = -1;
+		rc->y = -1;
+		rc->width = -1;
+		rc->height = -1;
   	}
 
   	if (greyImg)
@@ -164,5 +172,7 @@ i
   	}
 
   	cvReleaseMemStorage(&storage);	
+
+	return rc;
 
 }
