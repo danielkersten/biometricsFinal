@@ -34,10 +34,6 @@ LIBS = \
   -lopencv_video \
   -lopencv_videostab
 
-# NOTE: These libraries most likely are not needed.
-# -lopencv_gpu.so
-# -lopencv_nonfree.so
-
 DEPS = \
   CameraCapture.hpp \
   options.hpp
