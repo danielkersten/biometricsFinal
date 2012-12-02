@@ -26,7 +26,6 @@ CameraCapture::CameraCapture()
 CameraCapture::~CameraCapture()
 {
   cvReleaseCapture(&camera);
-
 }
 
 bool CameraCapture::initCamera()
@@ -70,7 +69,6 @@ IplImage *CameraCapture::getCameraFrame()
 
 CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade)
 {
-
   CvSize minFeatureSize = cvSize(20, 20);
 
   int flags = CV_HAAR_FIND_BIGGEST_OBJECT | CV_HAAR_DO_ROUGH_SEARCH;

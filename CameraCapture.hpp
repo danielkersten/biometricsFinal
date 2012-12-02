@@ -19,7 +19,6 @@ public:
   CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade);
   void storeTrainingData();
 
-
 private:
   CvCapture *camera;
   int nTrainFaces;
