@@ -18,19 +18,13 @@ public:
   ~CameraCapture();
   bool initCamera();
   IplImage *getCameraFrame();
-  CvRect detectFaceInImage(IplImage *inputImg,     CvHaarClassifierCascade   *cascade);
+  CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade);
   void storeTrainingData();
   int loadFaceImgArray(const char *filename);
   void doPCA();
 
   bool testCamera();
   bool train();
-
-  struct FrameCascade
-  {
-	IplImage *mInputImage;
-	CvHaarClassifierCascade *mCascade;
-   };
 
 private:
   static void *threadFunc(void *parm);
