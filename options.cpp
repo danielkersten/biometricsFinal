@@ -15,6 +15,7 @@ COptions::COptions()
   face_cascade_file = "haarcascade_frontalface_alt.xml";
   training_data_save_file = "facedata.xml";
   camera_device_number = 0;
+  operation = DEFAULT;
 }
 
 COptions &COptions::Instance()
@@ -38,6 +39,11 @@ int COptions::getCameraDeviceNumber()
   return camera_device_number;
 }
 
+int COptions::getOperation()
+{
+  return operation;
+}
+
 static const char usage[] =
   "Usage: camCapture [OPTIONS]\n"
   "Authors: Andres Mejia, Christopher O'Connell\n"
@@ -47,6 +53,9 @@ static const char usage[] =
   "  --face-cascade-file [FILE]           set FILE as face cascade file\n"
   "  --training-data-save-file [FILE]     set FILE as training data save file\n"
   "  --camera-device-number [NUMBER]      set the camera device number to use\n"
+  "  --operation [ARG]                    set the operation to run, valid\n"
+  "                                       operations are 'default', \n"
+  "                                       'training', and 'verification'\n"
   ;
 
 bool COptions::ParseOptions(int argc, const char **argv)
@@ -70,6 +79,21 @@ bool COptions::ParseOptions(int argc, const char **argv)
     else if (!arg.compare("--camera-device-number") && argv[++i])
     {
       camera_device_number = atoi(argv[i]);
+    }
+    else if (!arg.compare("--operation") && argv[++i])
+    {
+      std::string str = argv[i];
+      if (!str.compare("default"))
+        operation = DEFAULT;
+      else if (!str.compare("training"))
+        operation = TRAINING;
+      else if (!str.compare("verification"))
+        operation = VERIFICATION;
+      else
+      {
+        fprintf(stderr, "Unknown phase '%s'.\n", str.c_str());
+        return false;
+      }
     }
     else
     {

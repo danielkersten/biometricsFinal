@@ -17,6 +17,15 @@ public:
   std::string getFaceCascadeFile();
   std::string getTrainingDataSaveFile();
   int getCameraDeviceNumber();
+  int getOperation();
+
+  /* Different operations supported by this program */
+  enum
+  {
+    DEFAULT,
+    TRAINING,
+    VERIFICATION
+  };
 private:
   /* Global options are set/retrieved via the COptions singleton class */
   COptions();
@@ -25,6 +34,7 @@ private:
   std::string face_cascade_file;
   std::string training_data_save_file;
   int camera_device_number;
+  int operation;
 };
 
 #endif /*OPTIONS_HPP*/

@@ -6,21 +6,21 @@
 
 #include "CameraCapture.hpp"
 #include "options.hpp"
+#include "program.hpp"
 
 #include <cstdio>
 
-int main(int argc, const char **argv)
-{
-  if (!COptions::Instance().ParseOptions(argc, argv))
-    return EXIT_FAILURE;
+CProgram::CProgram(){}
 
+bool CProgram::testCamera()
+{
   std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
 
   CameraCapture *aCapture = new CameraCapture();
 
   /* Attempt to initialize the camera */
   if (!aCapture->initCamera())
-    return EXIT_FAILURE;
+    return false;
 
   cvNamedWindow("mywindow", CV_WINDOW_AUTOSIZE);
 
@@ -42,5 +42,5 @@ int main(int argc, const char **argv)
   delete aCapture;
   cvDestroyWindow("mywindow");
 
-  return 0;
+  return true;
 }
