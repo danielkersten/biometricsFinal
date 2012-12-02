@@ -187,6 +187,7 @@ int CameraCapture::loadFaceImgArray(const char *filename)
 
     /* load the face image */
     faceImgArr[iFace] = cvLoadImage(imgFilename, CV_LOAD_IMAGE_GRAYSCALE);
+    cvEqualizeHist(faceImgArr[iFace], faceImgArr[iFace]);
   }
 
   fclose(imgListFile);
