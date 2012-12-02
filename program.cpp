@@ -10,7 +10,7 @@
 
 #include <cstdio>
 
-CProgram::CProgram(){}
+CProgram::CProgram() {}
 
 bool CProgram::testCamera()
 {

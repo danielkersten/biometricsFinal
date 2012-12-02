@@ -83,6 +83,7 @@ bool COptions::ParseOptions(int argc, const char **argv)
     else if (!arg.compare("--operation") && argv[++i])
     {
       std::string str = argv[i];
+
       if (!str.compare("default"))
         operation = DEFAULT;
       else if (!str.compare("training"))

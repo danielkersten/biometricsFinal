@@ -18,17 +18,17 @@ int main(int argc, const char **argv)
 
   switch (COptions::Instance().getOperation())
   {
-    case COptions::DEFAULT:
-      program.testCamera();
-    case COptions::TRAINING:
-      fprintf(stderr, "Training operation not yet implemented.\n");
-      break;
-    case COptions::VERIFICATION:
-      fprintf(stderr, "Verification operation not yet implemented.\n");
-      break;
-    default:
-      fprintf(stderr, "Unknown operation specified.\n");
-      return EXIT_FAILURE;
+  case COptions::DEFAULT:
+    program.testCamera();
+  case COptions::TRAINING:
+    fprintf(stderr, "Training operation not yet implemented.\n");
+    break;
+  case COptions::VERIFICATION:
+    fprintf(stderr, "Verification operation not yet implemented.\n");
+    break;
+  default:
+    fprintf(stderr, "Unknown operation specified.\n");
+    return EXIT_FAILURE;
   }
 
   return EXIT_SUCCESS;
