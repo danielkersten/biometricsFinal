@@ -1,0 +1,22 @@
+/* Andres Mejia, Christopher O'Connell
+ * CS667
+ * Term Project
+ * 12/05/2012
+ */
+
+To run the cam capture as an image capture, run:
+./camCapture --num_images 1 --operation image_capture
+
+This will start a camera frame that will show what the camera is showing. 
+It will also launch a frame that shows the clipped face. This image has 
+been preprocessed and cropped to the correct size (currently 145x145)
+
+To save an image, make sure the preprocessed frame is selcted (has focus) 
+and then hit y. The terminal will prompt for a file name. Make sure the 
+terminal has focus. Images are currently saved to ./images. 
+
+The program will keep executing until all images have been captured
+
+#Known Issues:
+1)Focus: The preprocessed frame must have focus to get y. The terminal window must have 
+focus to take the file name. It's really annoying, but there really isn't a good way around this

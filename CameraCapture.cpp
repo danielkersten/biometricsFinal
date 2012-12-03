@@ -335,14 +335,58 @@ IplImage * CameraCapture::preProcessImage(IplImage *inputImg, int pWidth,int pHe
 }
 bool CameraCapture::captureImages(int pNumImages)
 {
-   (void)pNumImages;
+   char option =' ';
+   std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
+   CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
+   string filename ="";
+   string filedir="./images/";
    if(!initCamera())
    {
       fprintf(stderr,"Failed to init the camera");
       return true;
    } 
+   
+   cvNamedWindow("procImage", CV_WINDOW_AUTOSIZE);
+   cvNamedWindow("preProcessed", CV_WINDOW_AUTOSIZE);
 
+   int fileCount =0;
+   while (cvWaitKey(10) != 27 && fileCount<pNumImages)
+   {
+   IplImage *img = getCameraFrame();
+   cvShowImage("procImage", img);
+
+   CvRect aFace = detectFaceInImage(img, cascade);
+   cvRectangle(img, cvPoint(aFace.x, aFace.y), cvPoint(aFace.x + aFace.width, aFace.y + aFace.height), CV_RGB(255, 0, 0), 1, 8, 0);
+
+
+    if(aFace.x !=-1)
+    {
+	IplImage * cropped = cvCreateImage(cvSize(aFace.width, aFace.height),img->depth,img->nChannels);
+	cvSetImageROI(img,aFace);
+	cvCopy(img,cropped);
+	cvResetImageROI(img);
+
+	IplImage *preprocessed = preProcessImage(cropped,145,145);
+	cvShowImage("preProcessed", preprocessed);
+	option = cvWaitKey(10);
+        printf("Key pressed: %i \n",option);
+
+	//delete preprocessed;
+        if(option =='y' || option =='Y')
+        {
+           cin.clear();
+           fileCount++;
+           printf("Saving!\n");
+           
+           getline(cin,filename);
+           string filepath;
+           filepath = filedir+filename;
+           printf("Saving file: %s \n",filepath.c_str());
+	   cvSaveImage(filepath.c_str(),preprocessed);
+        }
+    }
+
+   }
    
-   
-   return false;
+   return true;
 }
