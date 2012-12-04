@@ -161,6 +161,10 @@ int CameraCapture::loadFaceImgArray(const char *filename)
   FILE *imgListFile = NULL;
   char imgFilename[512];
   int iFace, nFaces = 0;
+  cv::Mat faceROI;
+  std::string face_cascade_file = COptions::Instance().getFaceCascadeFile();
+
+  CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
 
   /* Open the input file */
   if ((imgListFile = fopen(filename, "r")) == NULL)
@@ -170,6 +174,7 @@ int CameraCapture::loadFaceImgArray(const char *filename)
   }
 
   /* count the number of faces */
+  memset(imgFilename, 0, sizeof(imgFilename));
   while (fgets(imgFilename, 512, imgListFile))
     nFaces++;
   rewind(imgListFile);
@@ -182,12 +187,32 @@ int CameraCapture::loadFaceImgArray(const char *filename)
   for (iFace = 0; iFace < nFaces; iFace++)
   {
     /* read person number and name of image file */
-    fscanf(imgListFile, "%d %s", personNumTruthMat->data.i + iFace,
-           imgFilename);
+    fscanf(imgListFile, "%s", imgFilename);
 
     /* load the face image */
     faceImgArr[iFace] = cvLoadImage(imgFilename, CV_LOAD_IMAGE_GRAYSCALE);
+
+    /* Error out if image failed to load */
+    if (!faceImgArr[iFace])
+    {
+      fprintf(stderr, "Failed to load image '%s'.\n", imgFilename);
+      return -1;
+    }
+
     cvEqualizeHist(faceImgArr[iFace], faceImgArr[iFace]);
+    CvRect aFace = detectFaceInImage(faceImgArr[iFace], cascade);
+
+    /* Error out if face could not be detected. */
+    if (aFace.width < 0)
+    {
+      fprintf(stderr, "Could not detect face in image '%s'.\n", imgFilename);
+      return -1;
+    }
+
+    cv::Mat imgMat(faceImgArr[iFace]);
+    imgMat = imgMat(aFace);
+    faceImgArr[iFace] = new IplImage(imgMat);
+    faceImgArr[iFace] = preProcessImage(faceImgArr[iFace], 145, 145);
   }
 
   fclose(imgListFile);
@@ -281,7 +306,12 @@ bool CameraCapture::train()
   std::string training_data_image_array_file =
     COptions::Instance().getTrainingDataImageArrayFile();
   nTrainFaces = loadFaceImgArray(training_data_image_array_file.c_str());
-  if (nTrainFaces < 2)
+  if (nTrainFaces <= 0)
+  {
+    fprintf(stderr, "Error loading images.\n");
+    return false;
+  }
+  else if (nTrainFaces < 2)
   {
     fprintf(stderr, "Need 2 or more training faces\n"
                     "Input file contains only %d\n", nTrainFaces);
