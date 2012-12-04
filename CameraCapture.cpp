@@ -326,7 +326,7 @@ IplImage * CameraCapture::preProcessImage(IplImage *inputImg, int pWidth,int pHe
 	
 	cvEqualizeHist(imageProcessed,imageProcessed);
 
-	if(imageGrey)
+	if(imageGrey && imageGrey != inputImg)
 	{
 		cvReleaseImage(&imageGrey);
 	}
