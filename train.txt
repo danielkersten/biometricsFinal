@@ -41,7 +41,6 @@ images/faces94/male/dcbowe/dcbowe.1.jpg
 images/faces94/male/dioann/dioann.1.jpg
 images/faces94/male/djbirc/djbirc.1.jpg
 images/faces94/male/djhugh/djhugh.1.jpg
-images/faces94/male/djmart/djmart.1.jpg
 images/faces94/male/dmwest/dmwest.1.jpg
 images/faces94/male/gdhatc/gdhatc.1.jpg
 images/faces94/male/ggeorg/ggeorg.1.jpg
