@@ -1,0 +1,4 @@
+Total number of pass: 64 
+Total Number of fail 294 
+Total Number of false reject 541 
+Total Number of true reject 0 
