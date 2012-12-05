@@ -32,6 +32,7 @@ public:
   bool testCamera();
   bool train();
   void recognize(IplImage * pFaceImage);
+  int findNearestNeighbor();
 
 private:
   CvCapture *camera;

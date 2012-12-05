@@ -469,4 +469,31 @@ void CameraCapture::recognize(IplImage * pFaceImage)
       0,0,
       pAvgTrainImg,
       projectedTestFace);
+
+   findNearestNeighbor();
+}
+
+int CameraCapture::findNearestNeighbor()
+{
+   double leastDistSq = DBL_MAX;
+   int i, iTrain, iNearest = 0;
+
+   for(iTrain = 0; iTrain<nTrainFaces; iTrain++)
+   {
+      double distSq = 0; 
+  
+      for(i=0; i<nEigens;i++)
+      {
+         float d_i = projectedTestFace[i]-projectedTrainFaceMat->data.fl[iTrain*nEigens+i];
+         distSq +=d_i*d_i;
+      }
+      if(distSq<leastDistSq)
+      {
+         leastDistSq = distSq;
+         iNearest = iTrain;
+      }
+   }
+
+   printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
+   return iNearest;
 }
