@@ -19,6 +19,7 @@ public:
   int getCameraDeviceNumber();
   int getOperation();
   int getNumImages();
+  int getUserName();
   std::string getTrainingDataImageArrayFile();
 
   /* Different operations supported by this program */
@@ -40,6 +41,7 @@ private:
   int operation;
   std::string training_data_image_array_file;
   int num_images;
+  int user_name;
 };
 
 #endif /*OPTIONS_HPP*/

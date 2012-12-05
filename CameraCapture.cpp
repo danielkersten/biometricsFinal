@@ -22,6 +22,8 @@ CameraCapture::CameraCapture()
   eigenVectArr = NULL;
   eigenValMat = NULL;
   projectedTrainFaceMat = NULL;
+  mMatchCount =0;
+  mFailCount = 0;
 }
 
 CameraCapture::~CameraCapture()
@@ -80,10 +82,13 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
   CvMemStorage *storage;
 
   CvRect rc;
-  //double t;
+  #ifdef _DEBUG
+  double t;
+  int ms; 
+  #endif
   CvSeq *rects;
   CvSize size;
-  //int ms; 
+  
   int nFaces;
 
   storage = cvCreateMemStorage(0);
@@ -99,14 +104,19 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
     detectImg = greyImg;
   }
 
-  //t = (double)cvGetTickCount();
+  #ifdef _DEBUG
+  t = (double)cvGetTickCount();
+  #endif
   rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 2, flags, minFeatureSize);
-
-  //t = (double)cvGetTickCount() - t;
-  //ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
+  
+  #ifdef _DEBUG
+  t = (double)cvGetTickCount() - t;
+  ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
+  #endif
   nFaces = rects->total;
-  //fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
-
+  #ifdef _DEBUG
+  fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
+#endif
   if (nFaces > 0)
   {
     rc = *(CvRect *)cvGetSeqElem(rects, 0);
@@ -210,7 +220,7 @@ int CameraCapture::loadTrainingData(CvMat **pTrainPersonNumMat)
    for (int iFace = 0; iFace < nFaces; iFace++)
    {
        /* read person number and name of image file */
-       fscanf(imgListFile, "%s", imgFilename);
+       (void)fscanf(imgListFile, "%s", imgFilename);
        string * fileName = new string(imgFilename);
        mTrainImageNames.push_back(*fileName);
    }
@@ -251,7 +261,7 @@ int CameraCapture::loadFaceImgArray(const char *filename)
   for (iFace = 0; iFace < nFaces; iFace++)
   {
     /* read person number and name of image file */
-    fscanf(imgListFile, "%s", imgFilename);
+    (void)fscanf(imgListFile, "%s", imgFilename);
 
     /* load the face image */
     faceImgArr[iFace] = cvLoadImage(imgFilename, CV_LOAD_IMAGE_GRAYSCALE);
@@ -364,6 +374,8 @@ bool CameraCapture::testCamera()
     //delete frame;
   }
 
+  printf("Total number of pass: %i \n, Total Number of fail %i \n", mMatchCount, mFailCount);
+
   cvDestroyWindow("mywindow");
   cvDestroyWindow("preProcessed");
   return true;
@@ -470,7 +482,7 @@ bool CameraCapture::captureImages(int pNumImages)
 	IplImage *preprocessed = preProcessImage(cropped,145,145);
 	cvShowImage("preProcessed", preprocessed);
 	option = cvWaitKey(10);
-        printf("Key pressed: %i \n",option);
+        //printf("Key pressed: %i \n",option);
 
 	//delete preprocessed;
         if(option =='y' || option =='Y')
@@ -481,7 +493,7 @@ bool CameraCapture::captureImages(int pNumImages)
            getline(cin,filename);
            string filepath;
            filepath = filedir+filename;
-           printf("Saving file: %s \n",filepath.c_str());
+           //printf("Saving file: %s \n",filepath.c_str());
 	   cvSaveImage(filepath.c_str(),preprocessed);
         }
     }
@@ -508,7 +520,6 @@ void CameraCapture::recognize(IplImage * pFaceImage)
    if(nearestIdx >=0 && nearestIdx < (int)mTrainImageNames.size())
    {
        
-       printf("Trying to load image: %s", mTrainImageNames[nearestIdx].c_str());
        IplImage * bestImage = cvLoadImage(mTrainImageNames[nearestIdx].c_str(),CV_LOAD_IMAGE_COLOR);
        cvShowImage("BestMatch", bestImage);
     }
@@ -536,6 +547,17 @@ int CameraCapture::findNearestNeighbor()
       }
    }
 
-   //printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
+#ifdef _DEBUG
+   printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
+#endif
+
+   if(iNearest == COptions::Instance().getUserName())
+   {
+	mMatchCount++;
+   }
+   else 
+   {
+	mFailCount++;
+   }
    return iNearest;
 }

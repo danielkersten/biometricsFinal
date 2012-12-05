@@ -56,6 +56,11 @@ int COptions::getNumImages()
    return num_images;
 }
 
+int COptions::getUserName()
+{
+   return user_name;
+}
+
 static const char usage[] =
   "Usage: camCapture [OPTIONS]\n"
   "Authors: Andres Mejia, Christopher O'Connell\n"
@@ -71,6 +76,8 @@ static const char usage[] =
   "                                       'training', and 'verification'\n"
   "  --training-data-image-array-file [FILE] set FILE as training data image\n"
   "                                          array file\n"
+  "  --user_name [NUMBER]                 Sets the username of the person in front\n"
+  "  of camera \n"
   ;
 
 bool COptions::ParseOptions(int argc, const char **argv)
@@ -121,6 +128,10 @@ bool COptions::ParseOptions(int argc, const char **argv)
     else if (!arg.compare("--training-data-image-array-file") && argv[++i])
     {
       training_data_image_array_file = argv[i];
+    }
+    else if(!arg.compare("--user_name") && argv[++i])
+    {
+        user_name = atoi(argv[i]);
     }
     else
     {

@@ -48,5 +48,7 @@ private:
   CvMat *pTrainPersonNumMat;
   float * projectedTestFace;
   vector<string> mTrainImageNames;
+  int mMatchCount;
+  int mFailCount;
 };
 #endif
