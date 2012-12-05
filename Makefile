@@ -12,7 +12,7 @@ ifeq ($(WERROR),yes)
 CXXFLAGS += -Werror
 endif
 ifeq ($(DEBUG),yes)
-CXXFLAGS += -g3 -O0
+CXXFLAGS += -D_DEBUG -g3 -O0
 else
 CXXFLAGS += -g0 -O3
 endif
