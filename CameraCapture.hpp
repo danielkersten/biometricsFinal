@@ -11,6 +11,7 @@
 #include <opencv2/legacy/legacy.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class CameraCapture
@@ -46,5 +47,6 @@ private:
   CvMat *projectedTrainFaceMat;
   CvMat *pTrainPersonNumMat;
   float * projectedTestFace;
+  vector<string> mTrainImageNames;
 };
 #endif

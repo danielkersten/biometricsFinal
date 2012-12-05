@@ -186,6 +186,37 @@ int CameraCapture::loadTrainingData(CvMat **pTrainPersonNumMat)
       eigenVectArr[i] = (IplImage *)cvReadByName(fileStorage, 0, varname,0);
    }
    cvReleaseFileStorage(&fileStorage);
+
+   //Now load the names of the files
+  
+   std::string training_data_image_array_file =
+    COptions::Instance().getTrainingDataImageArrayFile();
+  
+   FILE *imgListFile = NULL; 
+   if ((imgListFile = fopen(training_data_image_array_file.c_str(), "r")) == NULL)
+   {
+       fprintf(stderr, "File '%s' failed to open.\n", training_data_image_array_file.c_str());
+       return -1;
+   }
+   char imgFilename[512];
+   
+   memset(imgFilename, 0, sizeof(imgFilename));
+   int nFaces = 0;
+   while (fgets(imgFilename, 512, imgListFile))
+   {
+      nFaces++;
+   }
+   rewind(imgListFile);
+   for (int iFace = 0; iFace < nFaces; iFace++)
+   {
+       /* read person number and name of image file */
+       fscanf(imgListFile, "%s", imgFilename);
+       string * fileName = new string(imgFilename);
+       mTrainImageNames.push_back(*fileName);
+   }
+
+    fclose(imgListFile);
+
    return 1;
 }
 
@@ -294,6 +325,7 @@ bool CameraCapture::testCamera()
 
   cvNamedWindow("mywindow", CV_WINDOW_AUTOSIZE);
   cvNamedWindow("preProcessed", CV_WINDOW_AUTOSIZE);
+  
   CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
 
   if(!loadTrainingData(&pTrainPersonNumMat) ) return false;
@@ -471,7 +503,16 @@ void CameraCapture::recognize(IplImage * pFaceImage)
       pAvgTrainImg,
       projectedTestFace);
 
-   findNearestNeighbor();
+   int nearestIdx = findNearestNeighbor();
+
+   cvNamedWindow("BestMatch",CV_WINDOW_AUTOSIZE);
+   if(nearestIdx >=0 && nearestIdx < (int)mTrainImageNames.size())
+   {
+       
+       printf("Trying to load image: %s", mTrainImageNames[nearestIdx].c_str());
+       IplImage * bestImage = cvLoadImage(mTrainImageNames[nearestIdx].c_str(),CV_LOAD_IMAGE_COLOR);
+       cvShowImage("BestMatch", bestImage);
+    }
 }
 
 int CameraCapture::findNearestNeighbor()
@@ -496,6 +537,6 @@ int CameraCapture::findNearestNeighbor()
       }
    }
 
-   printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
+   //printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
    return iNearest;
 }
