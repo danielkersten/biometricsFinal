@@ -2572,3 +2572,12 @@ images/andres/andres.6.jpg
 images/andres/andres.7.jpg
 images/andres/andres.8.jpg
 images/andres/andres.9.jpg
+images/chris/Chris10.jpg
+images/chris/chris2.jpg
+images/chris/chris3.jpg
+images/chris/Chris4.jpg
+images/chris/Chris5.jpg
+images/chris/Chris6.jpg
+images/chris/Chris7.jpg
+images/chris/Chris8.jpg
+images/chris/Chris9.jpg
