@@ -477,8 +477,7 @@ bool CameraCapture::captureImages(int pNumImages)
         {
            cin.clear();
            fileCount++;
-           printf("Saving!\n");
-           
+           printf("Image captured. Give filename to save image as: ");
            getline(cin,filename);
            string filepath;
            filepath = filedir+filename;
