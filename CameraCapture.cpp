@@ -80,10 +80,11 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
   CvMemStorage *storage;
 
   CvRect rc;
-  double t;
+  //double t;
   CvSeq *rects;
   CvSize size;
-  int ms, nFaces;
+  //int ms; 
+  int nFaces;
 
   storage = cvCreateMemStorage(0);
   cvClearMemStorage(storage);
@@ -98,13 +99,13 @@ CvRect CameraCapture::detectFaceInImage(IplImage *inputImg, CvHaarClassifierCasc
     detectImg = greyImg;
   }
 
-  t = (double)cvGetTickCount();
+  //t = (double)cvGetTickCount();
   rects = cvHaarDetectObjects(detectImg, cascade, storage, search_scale_factor, 2, flags, minFeatureSize);
 
-  t = (double)cvGetTickCount() - t;
-  ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
+  //t = (double)cvGetTickCount() - t;
+  //ms = cvRound(t / ((double)cvGetTickFrequency() * 1000.0));
   nFaces = rects->total;
-  fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
+  //fprintf(stdout, "Face Detection took %d ms and found %d objects\n", ms, nFaces);
 
   if (nFaces > 0)
   {
@@ -485,7 +486,8 @@ int CameraCapture::findNearestNeighbor()
       for(i=0; i<nEigens;i++)
       {
          float d_i = projectedTestFace[i]-projectedTrainFaceMat->data.fl[iTrain*nEigens+i];
-         distSq +=d_i*d_i;
+         //distSq +=d_i*d_i;
+         distSq += d_i*d_i/eigenValMat->data.fl[i];
       }
       if(distSq<leastDistSq)
       {
