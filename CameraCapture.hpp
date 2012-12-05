@@ -22,6 +22,7 @@ public:
   IplImage *getCameraFrame();
   CvRect detectFaceInImage(IplImage *inputImg, CvHaarClassifierCascade   *cascade);
   void storeTrainingData();
+  int loadTrainingData(CvMat **pTrainPersonNumMat);
   int loadFaceImgArray(const char *filename);
   void doPCA();
 
@@ -30,6 +31,7 @@ public:
   bool captureImages(int pNumImages);
   bool testCamera();
   bool train();
+  void recognize(IplImage * pFaceImage);
 
 private:
   CvCapture *camera;
@@ -41,5 +43,7 @@ private:
   IplImage **eigenVectArr;
   CvMat *eigenValMat;
   CvMat *projectedTrainFaceMat;
+  CvMat *pTrainPersonNumMat;
+  float * projectedTestFace;
 };
 #endif

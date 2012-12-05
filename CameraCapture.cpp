@@ -156,6 +156,38 @@ void CameraCapture::storeTrainingData()
   cvReleaseFileStorage(&fileStorage);
 }
 
+int CameraCapture::loadTrainingData(CvMat **pTrainPersonNumMat)
+{
+   CvFileStorage * fileStorage;
+   int i;
+
+   fileStorage = cvOpenFileStorage("facedata.xml",0,CV_STORAGE_READ);
+    
+   if(!fileStorage)
+   {
+      fprintf(stderr, "Can't open facedata.xml\n");
+      return 0;
+   }
+
+   nEigens = cvReadIntByName(fileStorage, 0, "nEigens",0);
+   nTrainFaces = cvReadIntByName(fileStorage, 0, "nTrainFaces",0);
+   *pTrainPersonNumMat = (CvMat *)cvReadByName(fileStorage,0,"trainPersonNumMat");
+   eigenValMat = (CvMat *)cvReadByName(fileStorage, 0,"eigenValMat",0);
+   projectedTrainFaceMat = (CvMat *)cvReadByName(fileStorage, 0, "projectedTrainFaceMat",0);
+   pAvgTrainImg = (IplImage *)cvReadByName(fileStorage,0,"avgTrainImg",0);
+   eigenVectArr = (IplImage **)cvAlloc(nTrainFaces*sizeof(IplImage *));
+
+   for(i = 0;i<nEigens;i++)
+   {
+
+      char varname[200];
+      sprintf(varname, "eigenVect_%d",i);
+      eigenVectArr[i] = (IplImage *)cvReadByName(fileStorage, 0, varname,0);
+   }
+   cvReleaseFileStorage(&fileStorage);
+   return 1;
+}
+
 int CameraCapture::loadFaceImgArray(const char *filename)
 {
   FILE *imgListFile = NULL;
@@ -263,6 +295,10 @@ bool CameraCapture::testCamera()
   cvNamedWindow("preProcessed", CV_WINDOW_AUTOSIZE);
   CvHaarClassifierCascade *cascade = (CvHaarClassifierCascade *)cvLoad(face_cascade_file.c_str());
 
+  if(!loadTrainingData(&pTrainPersonNumMat) ) return false;
+
+  projectedTestFace =  (float *)cvAlloc(nEigens*sizeof(float));
+
   while (cvWaitKey(10) != 27)
   {
     IplImage *frame;
@@ -273,11 +309,12 @@ bool CameraCapture::testCamera()
     }
 
     CvRect aFace = detectFaceInImage(frame, cascade);
-    cvRectangle(frame, cvPoint(aFace.x, aFace.y), cvPoint(aFace.x + aFace.width, aFace.y + aFace.height), CV_RGB(255, 0, 0), 1, 8, 0);
+    
 
 
     if(aFace.x !=-1)
     {
+        cvRectangle(frame, cvPoint(aFace.x, aFace.y), cvPoint(aFace.x + aFace.width, aFace.y + aFace.height), CV_RGB(255, 0, 0), 1, 8, 0);
 	IplImage * cropped = cvCreateImage(cvSize(aFace.width, aFace.height),frame->depth,frame->nChannels);
 	cvSetImageROI(frame,aFace);
 	cvCopy(frame,cropped);
@@ -286,6 +323,7 @@ bool CameraCapture::testCamera()
 	IplImage *preprocessed = preProcessImage(cropped,145,145);
 	cvShowImage("preProcessed", preprocessed);
 	//delete preprocessed;
+	recognize(preprocessed);
     }
 
     
@@ -419,4 +457,16 @@ bool CameraCapture::captureImages(int pNumImages)
    }
    
    return true;
+}
+
+void CameraCapture::recognize(IplImage * pFaceImage)
+{
+   (void)pFaceImage;
+   cvEigenDecomposite(
+      pFaceImage,
+      nEigens,
+      eigenVectArr,
+      0,0,
+      pAvgTrainImg,
+      projectedTestFace);
 }
