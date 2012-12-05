@@ -50,5 +50,8 @@ private:
   vector<string> mTrainImageNames;
   int mMatchCount;
   int mFailCount;
+  int mFalseReject;
+  int mTrueReject;
+
 };
 #endif

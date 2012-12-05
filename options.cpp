@@ -18,6 +18,8 @@ COptions::COptions()
   operation = DEFAULT;
   training_data_image_array_file = "train.txt";
   num_images = 5;  
+  user_name = -1;
+  threshold = -1;
 }
 
 COptions &COptions::Instance()
@@ -60,6 +62,10 @@ int COptions::getUserName()
 {
    return user_name;
 }
+float COptions::getThreshold()
+{
+   return threshold;
+}
 
 static const char usage[] =
   "Usage: camCapture [OPTIONS]\n"
@@ -78,6 +84,8 @@ static const char usage[] =
   "                                          array file\n"
   "  --user_name [NUMBER]                 Sets the username of the person in front\n"
   "  of camera \n"
+  "  --threshold [NUMBER]                 The threshold to set to accept. Expect this\n"
+  " to be a decimal from 1-2\n"
   ;
 
 bool COptions::ParseOptions(int argc, const char **argv)
@@ -132,6 +140,10 @@ bool COptions::ParseOptions(int argc, const char **argv)
     else if(!arg.compare("--user_name") && argv[++i])
     {
         user_name = atoi(argv[i]);
+    }
+    else if (!arg.compare("--threshold") &&argv[++i])
+    {
+        threshold = atof(argv[i]);
     }
     else
     {

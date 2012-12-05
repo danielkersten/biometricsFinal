@@ -20,6 +20,7 @@ public:
   int getOperation();
   int getNumImages();
   int getUserName();
+  float getThreshold();
   std::string getTrainingDataImageArrayFile();
 
   /* Different operations supported by this program */
@@ -42,6 +43,7 @@ private:
   std::string training_data_image_array_file;
   int num_images;
   int user_name;
+  float threshold;
 };
 
 #endif /*OPTIONS_HPP*/

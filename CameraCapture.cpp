@@ -24,6 +24,8 @@ CameraCapture::CameraCapture()
   projectedTrainFaceMat = NULL;
   mMatchCount =0;
   mFailCount = 0;
+  mFalseReject = 0;
+  mTrueReject = 0;
 }
 
 CameraCapture::~CameraCapture()
@@ -374,7 +376,7 @@ bool CameraCapture::testCamera()
     //delete frame;
   }
 
-  printf("Total number of pass: %i \n, Total Number of fail %i \n", mMatchCount, mFailCount);
+  printf("Total number of pass: %i \n, Total Number of fail %i \n Total Number of false reject %i \n Total Number of true reject %i \n", mMatchCount, mFailCount, mFalseReject, mTrueReject);
 
   cvDestroyWindow("mywindow");
   cvDestroyWindow("preProcessed");
@@ -523,12 +525,20 @@ void CameraCapture::recognize(IplImage * pFaceImage)
        IplImage * bestImage = cvLoadImage(mTrainImageNames[nearestIdx].c_str(),CV_LOAD_IMAGE_COLOR);
        cvShowImage("BestMatch", bestImage);
     }
+   else
+   {
+        IplImage * image = cvCreateImage(cvSize(100,100),IPL_DEPTH_8U,3);
+	cvZero(image);
+ 	cvShowImage("BestMatch", image);
+
+   }
 }
 
 int CameraCapture::findNearestNeighbor()
 {
    double leastDistSq = DBL_MAX;
-   int i, iTrain, iNearest = 0;
+   int i , iTrain, iNearest = -1;
+   float thresh = COptions::Instance().getThreshold();
 
    for(iTrain = 0; iTrain<nTrainFaces; iTrain++)
    {
@@ -540,24 +550,63 @@ int CameraCapture::findNearestNeighbor()
          //distSq +=d_i*d_i;
          distSq += d_i*d_i/eigenValMat->data.fl[i];
       }
-      if(distSq<leastDistSq)
+
+      if(thresh == -1)
       {
-         leastDistSq = distSq;
-         iNearest = iTrain;
+         if(distSq<leastDistSq)
+      	 {
+            leastDistSq = distSq;
+            iNearest = iTrain;
+         }
+      }
+      else
+      {
+	if(distSq<leastDistSq &&distSq<thresh)
+        {
+             leastDistSq = distSq;
+             iNearest = iTrain;
+        }
+
       }
    }
 
 #ifdef _DEBUG
-   printf("Best match %i, with a distance %f \n",iNearest,leastDistSq);
+   
+   printf("Best match %i", iNearest); 
+
+   if(iNearest >=0)
+   {
+      printf("with a distance %f \n",leastDistSq);
+   }
+   else
+   {
+      printf("\n");
+   }
 #endif
 
-   if(iNearest == COptions::Instance().getUserName())
+   if(iNearest >=0)
    {
-	mMatchCount++;
+       if(iNearest == COptions::Instance().getUserName())
+       {
+	   mMatchCount++;
+       }
+       else 
+       {
+	   mFailCount++;
+       }
    }
-   else 
+   else
    {
-	mFailCount++;
+      //If the user is in the DB
+      if(COptions::Instance().getUserName() < mTrainImageNames.size())
+      {
+           mFalseReject++;
+      }
+      else
+      {
+           mTrueReject++;
+      }
+
    }
    return iNearest;
 }
